@@ -2,8 +2,7 @@
 
 This repository is made for my completely AI generated system info tool made by Codex, any changes will be listed as "by Codex" unless made by me will be listed as otherwise.
 
-![alt text](https://github.com/adamitronic/Mac-System-Probe/blob/main/ChatGPT%20Macintosh%20Plus.png "Logo Title Text 1")
-
+![alt text](https://github.com/adamitronic/Mac-System-Probe/blob/main/ChatGPT%20Macintosh%20Plus.png "ChatGPT Macintosh Plus")
 
 # Mac System Probe
 
