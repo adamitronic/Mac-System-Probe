@@ -1,3 +1,7 @@
+# About
+
+This repository is made for my completely AI generated system info tool made by Codex, any changes will be listed as "by Codex" unless made by me will be listed as otherwise.
+
 # Mac System Probe
 
 Mac System Probe is a classic Macintosh Pascal utility for **System 6.0.8** and nearby 68K-era environments. It opens a native Toolbox window and presents detailed machine information through an interactive, period-appropriate UI instead of a plain text dump.
