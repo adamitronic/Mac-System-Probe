@@ -2,6 +2,8 @@
 
 This repository is made for my completely AI generated system info tool made by Codex, any changes will be listed as "by Codex" unless made by me will be listed as otherwise.
 
+AI is bound to make mistakes, so if any are found or is just plain unusable that is the reason. I do not know how Pascal works and created this purely out of curiousity. Feel free to take as you please and maybe I'll look more into how this programming language works.
+
 ![alt text](https://github.com/adamitronic/Mac-System-Probe/blob/main/ChatGPT%20Macintosh%20Plus.png "ChatGPT Macintosh Plus")
 
 # Mac System Probe
