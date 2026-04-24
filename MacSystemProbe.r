@@ -1,0 +1,71 @@
+#include "Types.r"
+
+#define kAppleMenuID   128
+#define kFileMenuID    129
+#define kViewMenuID    130
+#define kMenuBarID     200
+#define kAboutAlertID  256
+
+resource 'MBAR' (kMenuBarID, preload) {
+  {
+    kAppleMenuID,
+    kFileMenuID,
+    kViewMenuID
+  }
+};
+
+resource 'MENU' (kAppleMenuID, preload) {
+  kAppleMenuID,
+  textMenuProc,
+  0b11111111111111111111111111111101,
+  enabled,
+  apple,
+  {
+    "About System Probe...", noicon, nokey, nomark, plain;
+    "-", noicon, nokey, nomark, plain
+  }
+};
+
+resource 'MENU' (kFileMenuID, preload) {
+  kFileMenuID,
+  textMenuProc,
+  allEnabled,
+  enabled,
+  "File",
+  {
+    "Refresh", noicon, "R", nomark, plain;
+    "Quit", noicon, "Q", nomark, plain
+  }
+};
+
+resource 'MENU' (kViewMenuID, preload) {
+  kViewMenuID,
+  textMenuProc,
+  allEnabled,
+  enabled,
+  "View",
+  {
+    "Overview", noicon, nokey, nomark, plain;
+    "Memory", noicon, nokey, nomark, plain;
+    "Display", noicon, nokey, nomark, plain;
+    "Raw IDs", noicon, nokey, nomark, plain;
+    "About", noicon, nokey, nomark, plain
+  }
+};
+
+resource 'ALRT' (kAboutAlertID, preload) {
+  { 64, 74, 190, 374 },
+  kAboutAlertID,
+  OK, visible, silent,
+  OK, visible, silent,
+  OK, visible, silent,
+  OK, visible, silent
+};
+
+resource 'DITL' (kAboutAlertID, preload) {
+  {
+    { { 92, 120, 112, 180 }, Button { enabled, "OK" } },
+    { { 12, 14, 76, 286 }, StaticText { disabled,
+      "Mac System Probe 0.1.0\rClassic Macintosh system inspector.\rDesigned for System 6.0.8-era Macs." } }
+  }
+};

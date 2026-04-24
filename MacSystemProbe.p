@@ -1,12 +1,5 @@
 PROGRAM MacSystemProbe;
 
-USES
-  MemTypes,
-  QuickDraw,
-  OSIntf,
-  ToolIntf,
-  PackIntf;
-
 CONST
   kPanelOverview = 1;
   kPanelMemory   = 2;
@@ -21,6 +14,8 @@ CONST
   kAppleMenuID   = 128;
   kFileMenuID    = 129;
   kViewMenuID    = 130;
+  kMenuBarID     = 200;
+  kAboutAlertID  = 256;
 
   kCmdRefresh    = 1;
   kCmdQuit       = 2;
@@ -724,7 +719,12 @@ BEGIN
     kAppleMenuID:
       BEGIN
         IF theItem = 1 THEN
-          SelectPanel(kPanelAbout)
+        BEGIN
+          IF GetResource('ALRT', kAboutAlertID) <> NIL THEN
+            NoteAlert(kAboutAlertID, NIL)
+          ELSE
+            SelectPanel(kPanelAbout);
+        END
         ELSE
         BEGIN
           GetItem(gAppleMenu, theItem, deskName);
@@ -853,18 +853,30 @@ PROCEDURE BuildMenus;
 VAR
   appleTitle: Str255;
 BEGIN
-  appleTitle := CHR(20);
-  gAppleMenu := NewMenu(kAppleMenuID, appleTitle);
-  AppendMenu(gAppleMenu, 'About System Probe...');
+  gAppleMenu := GetMenu(kAppleMenuID);
+  IF gAppleMenu = NIL THEN
+  BEGIN
+    appleTitle := CHR(20);
+    gAppleMenu := NewMenu(kAppleMenuID, appleTitle);
+    AppendMenu(gAppleMenu, 'About System Probe...');
+  END;
   AddResMenu(gAppleMenu, 'DRVR');
   InsertMenu(gAppleMenu, 0);
 
-  gFileMenu := NewMenu(kFileMenuID, 'File');
-  AppendMenu(gFileMenu, 'Refresh/R;Quit/Q');
+  gFileMenu := GetMenu(kFileMenuID);
+  IF gFileMenu = NIL THEN
+  BEGIN
+    gFileMenu := NewMenu(kFileMenuID, 'File');
+    AppendMenu(gFileMenu, 'Refresh/R;Quit/Q');
+  END;
   InsertMenu(gFileMenu, 0);
 
-  gViewMenu := NewMenu(kViewMenuID, 'View');
-  AppendMenu(gViewMenu, 'Overview;Memory;Display;Raw IDs;About');
+  gViewMenu := GetMenu(kViewMenuID);
+  IF gViewMenu = NIL THEN
+  BEGIN
+    gViewMenu := NewMenu(kViewMenuID, 'View');
+    AppendMenu(gViewMenu, 'Overview;Memory;Display;Raw IDs;About');
+  END;
   InsertMenu(gViewMenu, 0);
 
   DrawMenuBar;
