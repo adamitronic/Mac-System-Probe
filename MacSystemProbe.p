@@ -850,8 +850,11 @@ END;
 
 
 PROCEDURE BuildMenus;
+VAR
+  appleTitle: Str255;
 BEGIN
-  gAppleMenu := NewMenu(kAppleMenuID, CHR(20));
+  appleTitle := CHR(20);
+  gAppleMenu := NewMenu(kAppleMenuID, appleTitle);
   AppendMenu(gAppleMenu, 'About System Probe...');
   AddResMenu(gAppleMenu, 'DRVR');
   InsertMenu(gAppleMenu, 0);
