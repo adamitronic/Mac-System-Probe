@@ -1,0 +1,17 @@
+# macOS metadata
+.DS_Store
+._*
+# Windows metadata
+Thumbs.db
+Desktop.ini
+# Free Pascal / FPC build artifacts
+*.o
+*.ppu
+*.a
+*.or
+*.rst
+*.rsj
+ppas.sh
+link*.res
+# Local build outputs for this project
+/MacSystemProbe
