@@ -1,6 +1,6 @@
 # About
 
-This repository is made for my completely AI generated system info tool made by Codex, any changes will be listed as "by Codex" unless made by me will be listed as otherwise.
+This repository is made for my completely AI generated system info tool made by Codex, any changes will be listed as "by Codex" unless made by me will be listed as otherwise. This README.md is also generate by Codex.
 
 AI is bound to make mistakes, so if any are found or is just plain unusable that is the reason. I do not know how Pascal works and created this purely out of curiousity. Feel free to take as you please and maybe I'll look more into how this programming language works.
 
