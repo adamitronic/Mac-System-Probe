@@ -127,7 +127,7 @@ Possible next steps for the project:
 
 ## Release Info
 
-- Current version: [`0.1.0`](./CHANGELOG.md)
+- Current version: [`0.2.0`](./CHANGELOG.md)
 - License: [`GNU GPL v3.0`](./LICENSE)
 
 ## References
