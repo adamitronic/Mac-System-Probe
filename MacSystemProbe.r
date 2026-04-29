@@ -56,16 +56,20 @@ resource 'MENU' (kViewMenuID, preload) {
 resource 'ALRT' (kAboutAlertID, preload) {
   { 64, 74, 190, 374 },
   kAboutAlertID,
-  OK, visible, silent,
-  OK, visible, silent,
-  OK, visible, silent,
-  OK, visible, silent
+  {
+    OK, visible, silent,
+    OK, visible, silent,
+    OK, visible, silent,
+    OK, visible, silent
+  }
 };
 
 resource 'DITL' (kAboutAlertID, preload) {
   {
-    { { 92, 120, 112, 180 }, Button { enabled, "OK" } },
-    { { 12, 14, 76, 286 }, StaticText { disabled,
-      "Mac System Probe 0.1.0\rClassic Macintosh system inspector.\rDesigned for System 6.0.8-era Macs." } }
+    { 92, 120, 112, 180 },
+    Button { enabled, "OK" },
+    { 12, 14, 76, 286 },
+    StaticText { disabled,
+      "Mac System Probe 0.1.0\rClassic Macintosh system inspector.\rDesigned for System 6.0.8-era Macs." }
   }
 };
