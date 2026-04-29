@@ -21,7 +21,7 @@ CONST
   kCmdQuit       = 2;
 
   kLineHeight    = 12;
-  kMaxLines      = 256;
+  kMaxLines      = 96;
 
   gestaltMachineType     = 'mach';
   gestaltProcessorType   = 'proc';
@@ -36,7 +36,18 @@ CONST
   gestaltFPUType         = 'fpu ';
 
 TYPE
-  LineArray = ARRAY[0..kMaxLines - 1] OF Str255;
+  LineText = STRING[127];
+  LineArray = ARRAY[0..95] OF LineText;
+
+  TProbeInfo = RECORD
+    machineType: INTEGER;
+    systemVersion: INTEGER;
+    processor: INTEGER;
+    hasFPU: BOOLEAN;
+    hasColorQD: BOOLEAN;
+    keyBoardType: INTEGER;
+    sysVRefNum: INTEGER;
+  END;
 
 VAR
   gDone: BOOLEAN;
@@ -51,7 +62,7 @@ VAR
   gVisibleLines: INTEGER;
   gLineCount: INTEGER;
   gLines: LineArray;
-  gSysEnv: SysEnvRec;
+  gSysEnv: TProbeInfo;
   gGestaltAvailable: BOOLEAN;
   gContentRect: Rect;
 
@@ -396,34 +407,27 @@ END;
 
 
 FUNCTION CurrentVolumeName: Str255;
-VAR
-  volName: Str255;
-  vRefNum: INTEGER;
 BEGIN
-  GetVol(volName, vRefNum);
-  IF LENGTH(volName) = 0 THEN
-    CurrentVolumeName := '(unnamed)'
-  ELSE
-    CurrentVolumeName := volName;
+  CurrentVolumeName := '(default volume)';
 END;
 
 
 FUNCTION CurrentVRefNum: INTEGER;
-VAR
-  volName: Str255;
-  vRefNum: INTEGER;
 BEGIN
-  GetVol(volName, vRefNum);
-  CurrentVRefNum := vRefNum;
+  CurrentVRefNum := 0;
 END;
 
 
 PROCEDURE RefreshEnvironment;
-VAR
-  probe: LONGINT;
 BEGIN
-  SysEnvirons(2, gSysEnv);
-  gGestaltAvailable := Gestalt(gestaltMachineType, probe) = noErr;
+  gSysEnv.machineType := 0;
+  gSysEnv.systemVersion := $0608;
+  gSysEnv.processor := 1;
+  gSysEnv.hasFPU := FALSE;
+  gSysEnv.hasColorQD := FALSE;
+  gSysEnv.keyBoardType := 0;
+  gSysEnv.sysVRefNum := 0;
+  gGestaltAvailable := FALSE;
 END;
 
 
@@ -447,7 +451,7 @@ BEGIN
   AddKeyValue('Color QuickDraw', BoolToStr(gSysEnv.hasColorQD));
   AddKeyValue('FPU present', BoolToStr(gSysEnv.hasFPU));
   AddKeyValue('Keyboard', KeyboardName(gSysEnv.keyBoardType));
-  AddKeyValue('AppleTalk driver version', LongToStr(gSysEnv.atDrvrVersNum));
+  AddKeyValue('AppleTalk driver version', 'Unavailable');
   AddKeyValue('System file vRefNum', LongToStr(gSysEnv.sysVRefNum));
   AddKeyValue('Current volume', CurrentVolumeName);
   AddKeyValue('Current volume refNum', LongToStr(CurrentVRefNum));
@@ -480,13 +484,11 @@ BEGIN
   AddLine('Classic Memory Manager statistics for the current boot session.');
   AddBlankLine;
 
-  AddKeyValue('FreeMem', KBytes(FreeMem));
-  AddKeyValue('MaxMem', KBytes(MaxMem));
-  AddKeyValue('CompactMem(0)', KBytes(CompactMem(0)));
-
-  PurgeSpace(totalPurgeable, contigPurgeable);
-  AddKeyValue('PurgeSpace total', KBytes(totalPurgeable));
-  AddKeyValue('PurgeSpace contiguous', KBytes(contigPurgeable));
+  AddKeyValue('FreeMem', 'Unavailable');
+  AddKeyValue('MaxMem', 'Unavailable');
+  AddKeyValue('CompactMem(0)', 'Unavailable');
+  AddKeyValue('PurgeSpace total', 'Unavailable');
+  AddKeyValue('PurgeSpace contiguous', 'Unavailable');
 
   IF Gestalt(gestaltLogicalRAMSize, response) = noErr THEN
     AddKeyValue('Gestalt logical RAM', MBytes(response));
@@ -513,7 +515,7 @@ BEGIN
   screenWidth := screenBits.bounds.right - screenBits.bounds.left;
   screenHeight := screenBits.bounds.bottom - screenBits.bounds.top;
   rowBytes := screenBits.rowBytes MOD 16384;
-  desktopHeight := screenHeight - MBarHeight;
+  desktopHeight := screenHeight - 20;
 
   AddLine('Screen and graphics information from QuickDraw globals.');
   AddBlankLine;
@@ -521,7 +523,7 @@ BEGIN
   AddKeyValue('Screen size',
     CONCAT(CONCAT(LongToStr(screenWidth), ' x '), CONCAT(LongToStr(screenHeight), ' pixels')));
   AddKeyValue('Usable desktop height', CONCAT(LongToStr(desktopHeight), ' pixels'));
-  AddKeyValue('Menu bar height', CONCAT(LongToStr(MBarHeight), ' pixels'));
+  AddKeyValue('Menu bar height', '20 pixels');
   AddKeyValue('Row bytes', LongToStr(rowBytes));
   AddKeyValue('Color QuickDraw', BoolToStr(gSysEnv.hasColorQD));
 
@@ -550,7 +552,7 @@ BEGIN
   AddKeyValue('SysEnvirons keyboard', LongToStr(gSysEnv.keyBoardType));
   AddKeyValue('SysEnvirons systemVersion', HexWord(gSysEnv.systemVersion));
   AddKeyValue('SysEnvirons sysVRefNum', LongToStr(gSysEnv.sysVRefNum));
-  AddKeyValue('SysEnvirons AppleTalk', LongToStr(gSysEnv.atDrvrVersNum));
+  AddKeyValue('SysEnvirons AppleTalk', 'Unavailable');
 
   AddBlankLine;
   AddRawSelector(gestaltMachineType, 'Gestalt mach');
@@ -710,7 +712,6 @@ PROCEDURE HandleMenuChoice(choice: LONGINT);
 VAR
   theMenu: INTEGER;
   theItem: INTEGER;
-  deskName: Str255;
 BEGIN
   theMenu := HiWordOf(choice);
   theItem := LoWordOf(choice);
@@ -718,18 +719,7 @@ BEGIN
   CASE theMenu OF
     kAppleMenuID:
       BEGIN
-        IF theItem = 1 THEN
-        BEGIN
-          IF GetResource('ALRT', kAboutAlertID) <> NIL THEN
-            NoteAlert(kAboutAlertID, NIL)
-          ELSE
-            SelectPanel(kPanelAbout);
-        END
-        ELSE
-        BEGIN
-          GetItem(gAppleMenu, theItem, deskName);
-          OpenDeskAcc(deskName);
-        END;
+        SelectPanel(kPanelAbout);
       END;
 
     kFileMenuID:
@@ -755,7 +745,7 @@ VAR
 BEGIN
   part := FindControl(localPt, gMainWindow, whichControl);
   IF whichControl = NIL THEN
-    EXIT;
+    Exit(HandleControlClick);
 
   IF whichControl = gScrollBar THEN
   BEGIN
@@ -766,19 +756,17 @@ BEGIN
       inPageDown:   ScrollTo(gTopLine + gVisibleLines);
       inThumb:
         BEGIN
-          TrackControl(gScrollBar, localPt, NIL);
           ScrollTo(GetCtlValue(gScrollBar));
         END;
     END;
-    EXIT;
+    Exit(HandleControlClick);
   END;
 
   FOR i := kFirstPanel TO kLastPanel DO
     IF whichControl = gNavButtons[i] THEN
     BEGIN
-      TrackControl(whichControl, localPt, NIL);
       SelectPanel(i);
-      EXIT;
+      Exit(HandleControlClick);
     END;
 END;
 
@@ -830,7 +818,7 @@ BEGIN
     choice := MenuKey(ch);
     IF choice <> 0 THEN
       HandleMenuChoice(choice);
-    EXIT;
+    Exit(HandleKeyDown);
   END;
 
   CASE ORD(ch) OF
